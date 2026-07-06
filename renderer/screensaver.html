@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hole Desktop Overlay</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: transparent;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+<!-- WebGL canvas -->
+<canvas id="blackhole-canvas"></canvas>
+
+<script type="module">
+import { BlackHoleRenderer } from './blackhole-renderer.js';
+
+let renderer = null;
+const canvas = document.getElementById('blackhole-canvas');
+
+async function boot() {
+    renderer = new BlackHoleRenderer(canvas);
+    try {
+        await renderer.init();
+
+        // Capture desktop stream
+        if (window.electronAPI && typeof window.electronAPI.getDesktopSourceId === 'function') {
+            const sourceId = await window.electronAPI.getDesktopSourceId();
+            if (sourceId) {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: false,
+                    video: {
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            chromeMediaSourceId: sourceId
+                        },
+                        cursor: 'never'
+                    }
+                });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.muted = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                await video.play();
+                renderer.setVideoBackground(video);
+            }
+        }
+
+        renderer.start();
+    } catch (err) {
+        console.error('[BlackHoleRenderer]', err);
+    }
+
+    // Receive config from IPC
+    if (window.electronAPI && typeof window.electronAPI.onScreensaverShow === 'function') {
+        window.electronAPI.onScreensaverShow((data) => {
+            if (data && data.preset) {
+                const presetMap = { inferno: 0, gargantua: 1, m87: 2, quasar: 3, blazar: 4, purelens: 5 };
+                const idx = presetMap[data.preset.toLowerCase()];
+                if (idx !== undefined && renderer) {
+                    renderer.setPreset(idx);
+                }
+            }
+            if (renderer) {
+                renderer.reset();
+                renderer.start();
+            }
+        });
+    }
+
+    if (window.electronAPI && typeof window.electronAPI.onScreensaverHide === 'function') {
+        window.electronAPI.onScreensaverHide(() => {
+            if (renderer) {
+                renderer.stop();
+            }
+        });
+    }
+}
+
+boot();
+</script>
+
+</body>
+</html>

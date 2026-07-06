@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.npm-cache/
+.agents/
+*.log
+*.tmp
+*.bak
+.DS_Store

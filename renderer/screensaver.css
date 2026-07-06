@@ -1,0 +1,132 @@
+/* ============================================================
+   Screensaver Styles — Black Hole
+   ============================================================ */
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    cursor: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ---- Canvas ---- */
+#blackhole-canvas {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ---- Exit overlay ---- */
+#exit-overlay {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    opacity: 0;
+    animation: fadeInOverlay 2s ease-out 3s forwards;
+    pointer-events: none;
+}
+
+#exit-overlay.active {
+    pointer-events: auto;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ---- Prompt text ---- */
+#exit-prompt {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.45);
+    text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+    transition: opacity 0.4s ease;
+    white-space: nowrap;
+}
+
+/* ---- Input area ---- */
+#exit-input-area {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    min-height: 40px;
+}
+
+#exit-input-area.visible {
+    display: flex;
+}
+
+/* ---- Individual character cells ---- */
+.char-cell {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", monospace;
+    font-size: 18px;
+    width: 1.4em;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.25);
+    transition: color 0.15s ease, text-shadow 0.15s ease;
+    line-height: 1.4;
+}
+
+.char-cell.correct {
+    color: #4ade80;
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+}
+
+.char-cell.wrong {
+    color: #f87171;
+    text-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
+}
+
+.char-cell.current {
+    color: rgba(255, 255, 255, 0.7);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ---- Hidden real input (catches keyboard events) ---- */
+#hidden-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* ---- Completion flash ---- */
+#exit-overlay.completed {
+    animation: completionFlash 0.6s ease-out forwards;
+}
+
+@keyframes completionFlash {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.3; }
+    100% { opacity: 0; }
+}

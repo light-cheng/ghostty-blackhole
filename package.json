@@ -1,0 +1,25 @@
+{
+  "name": "blackhole-screensaver",
+  "version": "1.0.0",
+  "description": "Black Hole Screensaver - Work Break Reminder",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "pack": "electron-builder --win",
+    "dist": "electron-builder --win --publish never"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.blackhole.screensaver",
+    "productName": "Black Hole Screensaver",
+    "publish": null,
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.png"
+    }
+  }
+}

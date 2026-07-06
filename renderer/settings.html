@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="title">Black Hole 屏保设置</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-title">
+        <span class="title-icon">🕳️</span>
+        <span class="title-text" data-i18n="title">Black Hole 屏保</span>
+      </h1>
+      <button class="lang-toggle" id="langToggle" title="Toggle Language">中 / EN</button>
+    </header>
+
+    <!-- Main Settings Area -->
+    <main class="settings-main">
+      <section class="card card-settings">
+        <h2 class="section-heading" data-i18n="timerSettings">TIMER SETTINGS</h2>
+        <!-- Durations Grid -->
+        <div class="duration-grid">
+          <!-- Work Duration -->
+          <div class="setting-col">
+            <label class="setting-label" for="workDuration">
+              <span data-i18n="workDuration">WORK DURATION</span>
+            </label>
+            <div class="setting-control vertical-control">
+              <input type="range" id="workSlider" class="custom-slider" min="1" max="120" value="25">
+              <div class="number-input-wrapper">
+                <input type="number" id="workDuration" class="number-input" min="1" max="120" value="25">
+                <span class="number-unit" data-i18n="minutes">分钟</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Break Duration -->
+          <div class="setting-col">
+            <label class="setting-label" for="breakDuration">
+              <span data-i18n="breakDuration">BREAK DURATION</span>
+            </label>
+            <div class="setting-control vertical-control">
+              <input type="range" id="breakSlider" class="custom-slider" min="1" max="30" value="5">
+              <div class="number-input-wrapper">
+                <input type="number" id="breakDuration" class="number-input" min="1" max="30" value="5">
+                <span class="number-unit" data-i18n="minutes">分钟</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Loop Mode -->
+        <div class="setting-row">
+          <label class="setting-label" data-i18n="loopMode">LOOP MODE</label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="loopMode" checked>
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Easy Exit -->
+        <div class="setting-row">
+          <label class="setting-label">
+            <span data-i18n="easyExit">EASY EXIT</span>
+          </label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="easyExit">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Visual Style (same card) -->
+        <h2 class="section-heading" data-i18n="visualStyle">VISUALS</h2>
+        <div class="setting-row">
+          <label class="setting-label" for="blackHoleStyle">
+            <span data-i18n="blackHoleStyle">BLACK HOLE STYLE</span>
+          </label>
+          <div class="setting-control">
+            <div class="select-wrapper">
+              <select id="blackHoleStyle" class="custom-select compact-select">
+                <option value="inferno" data-i18n="presetInferno">Inferno（默认）— 5500K 暖色</option>
+                <option value="gargantua" data-i18n="presetGargantua">Gargantua — 电影级冷色</option>
+                <option value="m87" data-i18n="presetM87">M87* Donut — 正面射电</option>
+                <option value="quasar" data-i18n="presetQuasar">Quasar — 15000K 蓝热喷流</option>
+                <option value="blazar" data-i18n="presetBlazar">Blazar — 极端束射</option>
+                <option value="purelens" data-i18n="presetPurelens">Pure Lens — 引力透镜</option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 12 8" width="12" height="8">
+                <path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Status Panel -->
+    <footer class="status-panel">
+      <div class="status-info">
+        <div class="state-indicator" id="stateIndicator">
+          <span class="state-dot"></span>
+          <span class="state-text" id="stateText" data-i18n="stateIdle">⏸ 空闲</span>
+        </div>
+        <div class="cycle-count" id="cycleCount" data-i18n="cycleCount">已完成 0 个循环</div>
+      </div>
+
+      <div class="timer-display" id="timerDisplay">
+        <span class="timer-digits" id="timerDigits">00:00</span>
+      </div>
+
+      <div class="action-buttons" id="actionButtons">
+        <button class="btn btn-start" id="btnStart" title="开始工作">
+          <span class="btn-icon">▶</span>
+          <span class="btn-text" data-i18n="btnStart">开始工作</span>
+        </button>
+        <button class="btn btn-pause" id="btnPause" title="暂停" style="display:none">
+          <span class="btn-icon">⏸</span>
+          <span class="btn-text" data-i18n="btnPause">暂停</span>
+        </button>
+        <button class="btn btn-stop" id="btnStop" title="停止" style="display:none">
+          <span class="btn-icon">⏹</span>
+          <span class="btn-text" data-i18n="btnStop">停止</span>
+        </button>
+      </div>
+
+      <a href="#" class="manual-break-link" id="manualBreak" data-i18n="manualBreak">立即休息 →</a>
+    </footer>
+  </div>
+
+  <script src="locales.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>
