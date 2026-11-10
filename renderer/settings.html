@@ -12,7 +12,7 @@
     <!-- Header -->
     <header class="app-header">
       <h1 class="app-title">
-        <span class="title-icon">🕳️</span>
+        <img class="title-icon" src="../assets/icon-ui.png" width="24" height="24" alt="" draggable="false">
         <span class="title-text" data-i18n="title">Black Hole 屏保</span>
       </h1>
       <button class="lang-toggle" id="langToggle" title="Toggle Language">中 / EN</button>
@@ -67,13 +67,26 @@
         </div>
 
         <!-- Easy Exit -->
-        <div class="setting-row">
+        <div class="setting-row" data-i18n="easyExitTooltip" data-i18n-attr="title">
           <label class="setting-label">
             <span data-i18n="easyExit">EASY EXIT</span>
           </label>
           <div class="setting-control">
             <label class="toggle-switch">
               <input type="checkbox" id="easyExit">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Auto Start -->
+        <div class="setting-row" data-i18n="autoStartTooltip" data-i18n-attr="title">
+          <label class="setting-label">
+            <span data-i18n="autoStart">AUTO START</span>
+          </label>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="autoStart">
               <span class="toggle-track"><span class="toggle-thumb"></span></span>
             </label>
           </div>
@@ -135,7 +148,10 @@
         </button>
       </div>
 
-      <a href="#" class="manual-break-link" id="manualBreak" data-i18n="manualBreak">立即休息 →</a>
+      <div class="footer-links">
+        <a href="#" class="manual-break-link" id="manualBreak" data-i18n="manualBreak">立即休息 →</a>
+        <a href="#" class="quit-link" id="quitApp" data-i18n="quitApp">退出程序</a>
+      </div>
     </footer>
   </div>
 

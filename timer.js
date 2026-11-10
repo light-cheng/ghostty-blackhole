@@ -60,25 +60,27 @@ class TimerManager extends EventEmitter {
     this._remainingMs = this.workMinutes * 60 * 1000;
     this._paused = false;
     this._startInterval();
+    this.emit('tick', this.remainingSeconds, this.state);
   }
 
   pause() {
     if (this._state === State.IDLE) return;
     this._paused = true;
     this._stopInterval();
+    this.emit('tick', this.remainingSeconds, this.state);
   }
 
   resume() {
     if (this._state === State.IDLE || !this._paused) return;
     this._paused = false;
     this._startInterval();
+    this.emit('tick', this.remainingSeconds, this.state);
   }
 
   stop() {
     this._stopInterval();
     this._remainingMs = 0;
     this._paused = false;
-    this._cycles = 0;
     this._setState(State.IDLE);
     this.emit('tick', 0, this.state);
   }
@@ -91,23 +93,30 @@ class TimerManager extends EventEmitter {
     this._remainingMs = this.breakMinutes * 60 * 1000;
     this._paused = false;
     this._startInterval();
+    this.emit('tick', this.remainingSeconds, this.state);
   }
 
   /**
-   * End the break early (user dismissed screensaver).
-   * Returns true if a new work cycle should begin (loop mode).
+   * End the break. `resumeWork` starts a fresh work countdown (loop mode);
+   * `countCycle` exists for callers that track completed work cycles.
+   * Only the WORKING branch of `_onCountdownEnd` counts a cycle, so the
+   * normal hide path never increments it.
+   * @param {{ resumeWork?: boolean, countCycle?: boolean }} [options]
+   * @returns {boolean} true when a work countdown was started
    */
-  endBreak() {
+  endBreak({ resumeWork = this.loop, countCycle = false } = {}) {
+    if (this._state !== State.BREAK) return false;
     this._stopInterval();
-    this._cycles++;
-    const shouldLoop = this.loop;
-    if (shouldLoop) {
+    if (countCycle) this._cycles++;
+    this._remainingMs = 0;
+    this._paused = false;
+    if (resumeWork) {
       this.start();
     } else {
-      this._remainingMs = 0;
       this._setState(State.IDLE);
+      this.emit('tick', 0, this.state);
     }
-    return shouldLoop;
+    return !!resumeWork;
   }
 
   /**
@@ -169,17 +178,15 @@ class TimerManager extends EventEmitter {
 
   _onCountdownEnd() {
     if (this._state === State.WORKING) {
+      // A completed work session is the only thing that counts as a cycle.
+      this._cycles++;
       // Work session finished → trigger screensaver
       this.emit('triggered');
       // The main process will call startBreak() after showing the screensaver
     } else if (this._state === State.BREAK) {
-      // Break ended naturally
+      // Break ended naturally. main's hide path calls endBreak() once,
+      // which decides whether to start the next work countdown.
       this.emit('breakEnd');
-      if (this.loop) {
-        this.start();
-      } else {
-        this._setState(State.IDLE);
-      }
     }
   }
 }
