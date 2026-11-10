@@ -79,7 +79,7 @@ npm run dist    # the portable folder plus an NSIS installer
 
 ## 安装与卸载
 
-- **安装程序**：运行 `dist/Black Hole Screensaver Setup 1.0.0.exe`。安装程序未签名，首次启动会出现 SmartScreen 提示（`更多信息` → `仍要运行`）；它不是 UAC，也不需要管理员权限。安装程序会创建名为 `Black Hole 屏保` 的开始菜单与桌面快捷方式，通过 `cmd.exe /d /c start` 启动应用，不会残留控制台窗口。
+- **安装程序**：运行 `dist/Black Hole Screensaver Setup 1.0.1.exe`。安装程序未签名，首次启动会出现 SmartScreen 提示（`更多信息` → `仍要运行`）；它不是 UAC，也不需要管理员权限。安装程序会创建名为 `Black Hole 屏保` 的开始菜单与桌面快捷方式，通过 `cmd.exe /d /c start` 启动应用，不会残留控制台窗口。
 - **便携版**：把 `dist/win-unpacked` 复制到任意文件夹，运行 `启动 Black Hole 屏保.cmd`；文件夹里的 `使用说明.txt` 用中文描述了同样的步骤。
 - **卸载**：在 Windows 设置 → 应用中移除，或直接删除便携文件夹。`%APPDATA%\blackhole-screensaver` 中的设置会保留，除非你手动删除该目录。
 

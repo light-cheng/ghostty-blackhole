@@ -1,6 +1,6 @@
 {
   "name": "blackhole-screensaver",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Black Hole Screensaver - Work Break Reminder",
   "main": "main.js",
   "scripts": {

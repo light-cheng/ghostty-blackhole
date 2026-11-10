@@ -79,7 +79,7 @@ The packaged app ships only runtime files (`build.files` in `package.json`): `ma
 
 ## Install and uninstall
 
-- **Installer**: run `dist/Black Hole Screensaver Setup 1.0.0.exe`. The installer is unsigned, so the first launch shows the SmartScreen prompt (`更多信息` → `仍要运行`); it is not UAC and needs no administrator rights. It creates Start Menu and desktop shortcuts named `Black Hole 屏保`, which start the app through `cmd.exe /d /c start`; no console window is left running.
+- **Installer**: run `dist/Black Hole Screensaver Setup 1.0.1.exe`. The installer is unsigned, so the first launch shows the SmartScreen prompt (`更多信息` → `仍要运行`); it is not UAC and needs no administrator rights. It creates Start Menu and desktop shortcuts named `Black Hole 屏保`, which start the app through `cmd.exe /d /c start`; no console window is left running.
 - **Portable**: copy `dist/win-unpacked` to any folder and start `启动 Black Hole 屏保.cmd`; the folder's `使用说明.txt` describes the same steps in Chinese.
 - **Uninstall**: remove the app from Windows Settings → Apps, or delete the portable folder. Your settings in `%APPDATA%\blackhole-screensaver` stay unless you delete that folder yourself.
 
