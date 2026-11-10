@@ -11,6 +11,10 @@ uniform float     iTime;
 uniform vec4      iDate;
 uniform int       u_preset;
 uniform sampler2D u_desktop;
+// Contract: 1 only while blackhole-renderer.js has bound a live desktop
+// texture to u_desktop. With no capture, stay fully transparent instead of
+// sampling the incomplete texture (which reads as opaque black inside the mask).
+uniform int       u_hasDesktop;
 
 out vec4 fragColor;
 
@@ -124,10 +128,18 @@ vec3 stars(vec3 d) {
 
 // ------------------------------------------------------------------- image --
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    // Contract: u_hasDesktop == 0 means no usable capture texture is bound.
+    // Return fully transparent before any texture fetch so the DOM capture
+    // error hint shows through; sampling an incomplete texture would paint
+    // an opaque black lens over the desktop.
+    if (u_hasDesktop == 0) {
+        fragColor = vec4(0.0);
+        return;
+    }
+
     vec2  res    = iResolution.xy;
     vec2  uv     = fragCoord / res;
     float aspect = res.x / res.y;
-    float yUp    = 1.0 - uv.y;
     float t      = iTime * DRIFT_SPEED;
 
     int presetIndex = clamp(u_preset, 0, PRESET_COUNT - 1);
@@ -173,7 +185,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     center = (lo + hi) * 0.5 + wander * ampEff
            + wobAmp * vec2(cos(t * 0.8), sin(t * 1.0));
 
-    float vis = smoothstep(0.0, 0.10, I);
+    // Low-risk intro: fade the whole hole in over 1.5 s on each show. iTime is
+    // reset by renderer.reset(), and I / rh / center (the 60 s growth) are
+    // untouched, so the growth curve and relativistic integration do not change.
+    float intro = smoothstep(0.0, 1.5, iTime);
+    float vis = smoothstep(0.0, 0.10, I) * intro;
     if (vis <= 0.0) {
         fragColor = vec4(0.0);
         return;
@@ -181,7 +197,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float rh = HOLE_RADIUS * sz;
 
     float dil = mix(1.0, DILATION_MIN, I);
-    float shield = vis * smoothstep(WORK_AREA, WORK_AREA + 0.18, yUp);
+    // WORK_AREA is 0.0 for the screensaver, so no band is reserved there: the
+    // mask is just the visibility. The old smoothstep(WORK_AREA, WORK_AREA +
+    // 0.18, yUp) instead faded the top 18% of the screen, because WebGL's
+    // gl_FragCoord is bottom-up and yUp = 1 - uv.y is height-from-top
+    // (Ghostty's yUp is height-from-bottom). With no work area there is
+    // nothing to fade over.
+    float shield = vis;
 
     vec2  p    = (uv - center) * vec2(aspect, 1.0);
     float plen = length(p);
@@ -218,10 +240,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         }
         vec3 d = normalize(vec3(-(pr / b) * (2.0 / b), -1.0));
         
-        // Smoothly blend the distorted image over the real desktop!
-        // When lensStrength is near 0, alpha is near 0, showing the real desktop perfectly.
-        float alpha = smoothstep(0.0, 0.2, lensStrength); 
-        vec3 finalColor = term + stars(d) * L.star * lensStrength;
+        // Smoothly blend the distorted image over the real desktop. Both
+        // branches use the same alpha function of lensStrength = window *
+        // shield, so the inner/outer handoff at b == bmax is continuous; the
+        // old raw inner alpha there was ~0.69 (inferno) while the far field
+        // had already saturated at 1.0, leaving a visible ring.
+        float alpha = smoothstep(0.0, 0.2, lensStrength);
+        vec3  finalColor = term;
+        if (L.star > 0.0) {
+            finalColor += stars(d) * L.star * lensStrength;
+        }
         fragColor = vec4(finalColor * alpha, alpha);
         return;
     }
@@ -301,7 +329,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 bg = vec3(0.0);
     if (!captured) {
         vec3 d = normalize(v);
-        bg += stars(d) * L.star * window * shield;
+        if (L.star > 0.0) {
+            bg += stars(d) * L.star * window * shield;
+        }
         if (d.z < -0.05) {
             float tpl = (-LENS_DEPTH - x.z) / d.z;
             vec3  hp  = x + d * tpl;
@@ -314,7 +344,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     }
 
     vec3 col = bg * trans + (vec3(1.0) - exp(-emitc * L.expo));
-    float innerAlpha = window * shield;
+    // Same mask function as the far-field branch: at b == bmax both sides
+    // evaluate smoothstep(0.0, 0.2, window * shield), so the handoff is
+    // continuous. Raw window * shield was ~0.69 at bmax for inferno and
+    // ~0.34 for blazar, while the outer alpha had already reached 1.0.
+    float innerAlpha = smoothstep(0.0, 0.2, window * shield);
     fragColor = vec4(col * innerAlpha, innerAlpha);
 }
 

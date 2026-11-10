@@ -6,8 +6,10 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "pack": "electron-builder --win",
-    "dist": "electron-builder --win --publish never"
+    "test": "node --test test/*.test.js",
+    "pack": "electron-builder --win --dir && node scripts/fix-label.js dist",
+    "dist": "electron-builder --win --publish never && node scripts/fix-label.js dist",
+    "fix-label": "node scripts/fix-label.js dist"
   },
   "devDependencies": {
     "electron": "^35.0.0",
@@ -17,9 +19,34 @@
     "appId": "com.blackhole.screensaver",
     "productName": "Black Hole Screensaver",
     "publish": null,
+    "electronDist": "node_modules/electron/dist",
+    "files": [
+      "main.js",
+      "preload.js",
+      "timer.js",
+      "renderer/**",
+      "assets/**",
+      "package.json"
+    ],
+    "extraFiles": [
+      {
+        "from": "build/启动 Black Hole 屏保.cmd",
+        "to": "启动 Black Hole 屏保.cmd"
+      },
+      {
+        "from": "build/使用说明.txt",
+        "to": "使用说明.txt"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "runAfterFinish": false,
+      "shortcutName": "Black Hole 屏保",
+      "include": "build/installer.nsh"
     }
   }
 }

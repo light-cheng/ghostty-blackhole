@@ -16,6 +16,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   dismissScreensaver: () => ipcRenderer.invoke('dismiss-screensaver'),
   getDesktopSourceId: () => ipcRenderer.invoke('get-desktop-source-id'),
 
+  /* ── App ── */
+  quitApp: () => ipcRenderer.invoke('quit-app'),
+
   /* ── Events from main process → renderer ── */
   onTimerTick: (callback) => {
     ipcRenderer.on('timer-tick', (_e, data) => callback(data));
@@ -28,6 +31,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   onScreensaverHide: (callback) => {
     ipcRenderer.on('screensaver-hide', (_e) => callback());
+  },
+  onScreensaverCaptureInvalid: (callback) => {
+    ipcRenderer.on('screensaver-capture-invalid', (_e) => callback());
   },
   onSettingsChanged: (callback) => {
     ipcRenderer.on('settings-changed', (_e, data) => callback(data));

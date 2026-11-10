@@ -1,8 +1,10 @@
 node_modules/
 dist/
-.npm-cache/
-.agents/
+.probe*/
+.verify/
+tmp/
 *.log
-*.tmp
-*.bak
-.DS_Store
+
+portable/
+dist-new/
+dist-new2/
